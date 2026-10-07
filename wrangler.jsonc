@@ -8,8 +8,12 @@
     "directory": "./dist",
     "not_found_handling": "404-page"
   },
-  // Production custom domains are added at DNS cutover, once the Wix records for ar-dan.com and www are deleted;
-  // Cloudflare refuses to attach a custom domain while another record exists for that hostname.
+  // Cloudflare refuses to attach a custom domain while another DNS record exists for that hostname.
+  // ar-dan.com is redirected to www by a Redirect Rule in the dashboard.
+  "routes": [
+    { "pattern": "www.ar-dan.com", "custom_domain": true },
+    { "pattern": "ar-dan.com", "custom_domain": true }
+  ],
   "env": {
     "staging": {
       "name": "ar-dan-staging",
