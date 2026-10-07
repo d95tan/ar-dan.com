@@ -69,7 +69,7 @@ Gallery items are laid out two to a row and scaled to the same height, so portra
 
 | To change | Edit |
 | --- | --- |
-| Name, email, socials, hero photo, about text, terminal history | `src/site.ts` |
+| Name, email, socials, hero photo, about text, CV intro, terminal history | `src/site.ts` |
 | Jobs, education, awards, certifications | `src/content/cv/*.yml` (newest first, by `start`) |
 | Colours, fonts, grid size | top of `src/styles/global.css` |
 | Default mode for first-time visitors | `defaultMode` in `src/site.ts` |

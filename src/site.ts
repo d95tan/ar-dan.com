@@ -45,4 +45,8 @@ export const SITE = {
       'Now I bring the same design thinking to software as a Software Engineer at Esri Singapore, working with the ArcGIS platform. Before that, at EtaVolt, I designed and built solar lifecycle products end to end, from 3D visualisation in the browser to the APIs and data models behind them.',
     ],
   },
+
+  // Shown under the heading at the top of /cv.
+  cvIntro:
+    'I\u2019m a Software Engineer at Esri Singapore, building GIS automation, data pipelines and developer tooling on the ArcGIS platform for Singapore government agencies. I trained and practised as an architect first, and still work the same way: understand the people who will use it, plan the structure, then build it to last.',
 };
