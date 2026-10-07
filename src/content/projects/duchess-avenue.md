@@ -13,7 +13,7 @@ links:
   - label: RichardHO Architects
     url: https://richardhoarchitects.com/works/house-at-duchess-avenue
 featured: true
-order: 30
+order: 70
 ---
 
 A landed house by RichardHO Architects, where I worked on design development and construction (not as Qualified Person).

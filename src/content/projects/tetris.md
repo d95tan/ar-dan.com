@@ -16,6 +16,7 @@ links:
     url: https://tetris-by-dan.vercel.app/
   - label: GitHub
     url: https://github.com/d95tan/tetris-by-dan
+order: 10
 ---
 
 An implementation of Tetris in JavaScript and DOM manipulation, aiming to bring back the nostalgia of arcade machines where players arrange falling tetrominoes to complete rows.

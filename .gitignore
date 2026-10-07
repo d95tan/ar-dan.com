@@ -4,6 +4,8 @@ dist/
 originals/
 .astro/
 .wrangler/
+test-results/
+playwright-report/
 .env
 .env.*
 .DS_Store

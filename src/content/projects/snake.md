@@ -10,6 +10,7 @@ coverAlt: Snake game running in a terminal
 links:
   - label: GitHub
     url: https://github.com/d95tan/snake-by-dan
+order: 20
 ---
 
 Using what I learned in CS50, I recreated the beloved Nokia Snake game to be played in the VS Code terminal. The project tested my understanding of object-oriented programming, debugging, unit testing and threading.

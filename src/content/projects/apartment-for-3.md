@@ -10,6 +10,8 @@ cover: ./images/apartment-for-3/LAI-4.jpg
 coverAlt: Living and dining room with full-height white joinery and timber floors
 gallery: ./images/apartment-for-3
 
+featured: true
+order: 80
 ---
 
 Originally dark and segmented, the layout of the original apartment had to be rethought to allow for an abundance of natural light.

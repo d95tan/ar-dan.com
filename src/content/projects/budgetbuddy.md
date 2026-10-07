@@ -12,6 +12,7 @@ links:
     url: https://budgetbuddy.ar-dan.com/
   - label: GitHub
     url: https://github.com/d95tan/budgetbuddy
+order: 50
 ---
 
 BudgetBuddy is a personal finance tracker for people juggling several bank accounts, credit cards or investment accounts. It brings all of that information into one secure place, making it easier to see financial progress over time.

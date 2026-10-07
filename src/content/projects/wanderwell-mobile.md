@@ -12,6 +12,7 @@ links:
     url: https://github.com/d95tan/wanderwellMobile
   - label: GitHub (backend)
     url: https://github.com/d95tan/wanderwellExpress
+order: 40
 ---
 
 WanderWell Mobile is a native companion app for accessing travel plans and itineraries on the go. Like the web app, it lets users organise and plan trips with real-time weather forecasts, and adds trip sharing so friends can plan together.

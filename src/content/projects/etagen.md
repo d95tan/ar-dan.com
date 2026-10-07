@@ -13,8 +13,7 @@ gallery:
 links:
   - label: Live app
     url: https://vg-etagen.etavolt.app/
-featured: true
-order: 30
+order: 60
 ---
 
 EtaGen simplifies the solar sales process by bridging the gap between complex simulation tools and potential customers. It offers an intuitive platform that lets building owners quickly visualise their property's solar potential.
