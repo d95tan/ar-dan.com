@@ -1,0 +1,130 @@
+---
+import { getCollection, type CollectionEntry } from 'astro:content';
+import Base from '../layouts/Base.astro';
+import { SITE } from '../site';
+
+type Entry = CollectionEntry<'experience' | 'education' | 'awards' | 'certifications'>;
+
+const byStartDesc = (a: Entry, b: Entry) => (b.data.start ?? '').localeCompare(a.data.start ?? '');
+const fmt = (ym?: string) => {
+  if (!ym) return 'Present';
+  const [y, m] = ym.split('-').map(Number);
+  return m ? new Date(y, m - 1).toLocaleString('en-GB', { month: 'short', year: 'numeric' }) : String(y);
+};
+const range = (e: Entry) => {
+  if (!e.data.start) return '';
+  return e.data.end === e.data.start ? fmt(e.data.start) : `${fmt(e.data.start)} — ${fmt(e.data.end)}`;
+};
+
+const sections = [
+  { n: '01', title: 'Experience', entries: (await getCollection('experience')).sort(byStartDesc) },
+  { n: '02', title: 'Education', entries: (await getCollection('education')).sort(byStartDesc) },
+  { n: '03', title: 'Awards', entries: (await getCollection('awards')).sort(byStartDesc) },
+  { n: '04', title: 'Certifications', entries: (await getCollection('certifications')).sort(byStartDesc) },
+];
+---
+
+<Base title="CV" description={`Experience, education, awards and certifications of ${SITE.name}.`} sheet="A-200">
+  <div class="wrap">
+    <header class="intro">
+      <p class="mono mark"><span class="archi-only">More about myself</span><span class="tech-only">// readme.md</span></p>
+      <h1>I design &amp; I build.</h1>
+      <p class="soft">{SITE.about.body[0]}</p>
+    </header>
+
+    {
+      sections.map((s) => (
+        <section aria-labelledby={`cv-${s.n}`}>
+          <div class="sec-head">
+            <h2 id={`cv-${s.n}`}>
+              <small class="archi-only">{s.n}</small>
+              <small class="tech-only">//</small>
+              <span class="archi-only">{s.title}</span>
+              <span class="tech-only">{s.title.toLowerCase()}</span>
+            </h2>
+          </div>
+          <ol class="entries">
+            {s.entries.map((e) => (
+              <li>
+                <p class="when mono">{range(e)}</p>
+                <div class="what">
+                  <h3>{e.data.title}</h3>
+                  <p class="org mark mono">{e.data.org}</p>
+                  {e.data.summary && <p class="soft">{e.data.summary}</p>}
+                  {e.data.points.length > 0 && (
+                    <ul>
+                      {e.data.points.map((p) => (
+                        <li>{p}</li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))
+    }
+  </div>
+</Base>
+
+<style>
+  .intro {
+    padding-top: calc(var(--cell) * 3);
+    max-width: 62ch;
+  }
+  .intro h1 {
+    font-family: var(--head-font);
+    font-size: clamp(2.6rem, 6vw, 5rem);
+    letter-spacing: -0.04em;
+    line-height: var(--lh);
+    margin: var(--cell) 0;
+  }
+  .entries {
+    list-style: none;
+    padding: 0;
+  }
+  .entries > li {
+    display: grid;
+    grid-template-columns: calc(var(--cell) * 9) 1fr;
+    gap: var(--cell);
+    padding: var(--cell) 0 calc(var(--cell) - 1px);
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .when {
+    position: relative;
+    color: var(--ink-soft);
+  }
+  h3 {
+    font-family: var(--head-font);
+    font-size: 1.35rem;
+    letter-spacing: -0.02em;
+    line-height: var(--lh);
+  }
+  .what > p.soft {
+    max-width: 70ch;
+  }
+  .what ul {
+    padding-left: 0;
+    list-style: none;
+    display: grid;
+  }
+  .what ul li {
+    color: var(--ink-soft);
+    padding-left: var(--cell);
+    position: relative;
+  }
+  .what ul li::before {
+    content: '+';
+    position: absolute;
+    left: 0;
+    color: var(--mark);
+    font-family: var(--label-font);
+  }
+  @media (max-width: 720px) {
+    .entries > li {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+  }
+</style>

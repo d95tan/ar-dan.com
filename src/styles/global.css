@@ -1,0 +1,348 @@
+@view-transition {
+  navigation: auto;
+}
+
+:root {
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
+  --code: 'JetBrains Mono', ui-monospace, monospace;
+  --sans: 'Space Grotesk', system-ui, sans-serif;
+  --serif: 'Fraunces', Georgia, serif;
+  /* Layout sizes are multiples of --cell so content edges land on the background grid. */
+  --cell: 24px;
+  --header-h: calc(var(--cell) * 2);
+  --gutter: var(--cell);
+  --max: calc(var(--cell) * 50);
+  /* Line height for large type: the nearest whole number of cells. */
+  --lh: round(nearest, 1.05em, var(--cell));
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+
+:root[data-mode='archi'] {
+  color-scheme: light;
+  --paper: #f2f0e9;
+  --panel: #f2f0e9;
+  --ink: #17264a;
+  --ink-soft: #17264a99;
+  --ink-body: #384462;
+  --line: #17264a1f;
+  --line-strong: #17264a38;
+  --frame: #17264a;
+  --mark: #ff4d1f;
+  --on-mark: #fff;
+  --tint: #17264a;
+  --tint-op: 0.9;
+  --img-filter: grayscale(1) contrast(1.1);
+  --radius: 0px;
+  --head-font: var(--sans);
+  --label-font: var(--mono);
+  /* Opaque tints of the paper, so crossings and overlapping borders don't darken. */
+  --grid: #e6e7e7;
+  --grid-major: #d9dde2;
+  --bg-image:
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  --bg-size: calc(var(--cell) * 5) calc(var(--cell) * 5), calc(var(--cell) * 5) calc(var(--cell) * 5), var(--cell) var(--cell), var(--cell) var(--cell);
+  --bg-pos: calc(50% + var(--cell) * 2.5) 0, calc(50% + var(--cell) * 2.5) 0, calc(50% + var(--cell) / 2) 0, calc(50% + var(--cell) / 2) 0;
+}
+
+:root[data-mode='tech'] {
+  color-scheme: dark;
+  --paper: #0d1117;
+  --panel: #11161d;
+  --ink: #e6edf3;
+  --ink-soft: #8b949e;
+  --ink-body: #c9d1d9;
+  --line: #ffffff10;
+  --line-strong: #30363d;
+  --frame: #30363d;
+  --mark: #7ee787;
+  --on-mark: #0d1117;
+  --tint: #1f6feb;
+  --tint-op: 0.55;
+  --img-filter: grayscale(1) contrast(1.05) brightness(0.72);
+  --radius: 8px;
+  --head-font: var(--code);
+  --label-font: var(--code);
+  --grid: #2a3038;
+  --bg-image: radial-gradient(circle at 1px 1px, var(--grid) 1px, transparent 1.5px);
+  --bg-size: var(--cell) var(--cell);
+  --bg-pos: calc(50% + var(--cell) / 2) 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+}
+
+html {
+  scroll-padding-top: calc(var(--header-h) + 24px);
+}
+
+body {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--paper);
+  background-image: var(--bg-image);
+  background-size: var(--bg-size);
+  /* Centred on the page, so it lines up with the centred .wrap column below. */
+  background-position: var(--bg-pos);
+  color: var(--ink);
+  font-family: var(--sans);
+  line-height: var(--cell);
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.5s, color 0.5s;
+}
+main {
+  flex: 1;
+}
+[data-mode='archi'] body {
+  cursor: crosshair;
+}
+a {
+  color: inherit;
+}
+img {
+  max-width: 100%;
+}
+::selection {
+  background: var(--mark);
+  color: var(--on-mark);
+}
+:focus-visible {
+  outline: 2px solid var(--mark);
+  outline-offset: 2px;
+}
+
+/* Content column width, a multiple of two cells so both edges sit on grid lines when centred.
+   `100%` resolves where it's used, so this also works for absolutely positioned full-bleed children. */
+:root {
+  --wrap-w: round(down, min(100% - var(--gutter) * 2, var(--max)), calc(var(--cell) * 2));
+}
+/* Three columns with a one-cell gap also need (width - 2 cells) / 3 to be whole cells. */
+@media (min-width: 961px) {
+  :root {
+    --wrap-w: calc(round(down, min(100% - var(--gutter) * 2, var(--max)) - var(--cell) * 2, calc(var(--cell) * 6)) + var(--cell) * 2);
+  }
+}
+.wrap {
+  width: var(--wrap-w);
+  margin: 0 auto;
+}
+.mono {
+  font-family: var(--label-font);
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+[data-mode='tech'] .mono {
+  letter-spacing: 0;
+  text-transform: none;
+}
+.mark {
+  color: var(--mark);
+}
+.soft {
+  color: var(--ink-soft);
+}
+.archi-only,
+.tech-only {
+  display: none;
+}
+[data-mode='archi'] .archi-only,
+[data-mode='tech'] .tech-only {
+  display: revert;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* Section heading with sheet number */
+.sec-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--frame);
+  padding-bottom: calc(var(--cell) - 1px);
+  --m: calc(var(--cell) * 4);
+  margin-bottom: var(--cell);
+}
+
+/* Blocks that follow variable-height content (images, cards) are nudged back onto the
+   grid by the snap script in Base.astro. Set their top margin with --m, not margin-top. */
+:is(.sec-head, [data-snap]) {
+  margin-top: calc(var(--m, 0px) + var(--snap, 0px));
+}
+.sec-head h1,
+.sec-head h2 {
+  font-family: var(--head-font);
+  font-size: clamp(2rem, 4vw, 3rem);
+  letter-spacing: -0.03em;
+  line-height: calc(var(--cell) * 2);
+}
+[data-mode='tech'] .sec-head :is(h1, h2) {
+  letter-spacing: -0.05em;
+  font-weight: 600;
+}
+.sec-head small {
+  font-family: var(--label-font);
+  font-size: 0.8rem;
+  font-weight: 400;
+  vertical-align: top;
+  color: var(--mark);
+  margin-right: 10px;
+  letter-spacing: 0;
+}
+
+/* Buttons and tags */
+.btn-group {
+  display: flex;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.btn-group button {
+  font: inherit;
+  font-family: var(--label-font);
+  font-size: 0.75rem;
+  background: none;
+  border: 0;
+  padding: calc(var(--cell) / 2 - 1px) 16px;
+  cursor: pointer;
+  color: var(--ink);
+}
+.btn-group button + button {
+  border-left: 1px solid var(--line-strong);
+}
+.btn-group button[aria-pressed='true'] {
+  background: var(--ink);
+  color: var(--paper);
+}
+/* 20px tall plus 2px margins, so wrapped rows of tags stay one cell apart. */
+.tag {
+  display: inline-block;
+  font-family: var(--label-font);
+  font-size: 0.68rem;
+  line-height: 18px;
+  border: 1px solid var(--line-strong);
+  padding: 0 6px;
+  margin: 2px 0;
+}
+[data-mode='tech'] .tag {
+  border-radius: 99px;
+  padding: 0 8px;
+}
+.link-arrow {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  line-height: var(--cell);
+  text-decoration: underline 1px;
+  text-underline-offset: 5px;
+}
+.link-arrow:hover {
+  color: var(--mark);
+}
+
+/* Image placeholder when a project has no cover yet */
+.cover-placeholder {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-height: 160px;
+  color: var(--ink-soft);
+  background: repeating-linear-gradient(45deg, var(--line) 0 1px, transparent 1px 12px);
+}
+
+/* Markdown body */
+.prose {
+  max-width: 68ch;
+}
+.prose > * + * {
+  margin-top: var(--cell);
+}
+.prose h2,
+.prose h3 {
+  font-family: var(--head-font);
+  letter-spacing: -0.02em;
+  margin-top: calc(var(--cell) * 2);
+  line-height: var(--lh);
+}
+.prose h2 {
+  font-size: 1.6rem;
+}
+.prose h3 {
+  font-size: 1.25rem;
+}
+/* Long-form reading text: solid colour and a slightly heavier weight, since the soft ink is too faint at length. */
+.prose p,
+.prose li {
+  color: var(--ink-body);
+  font-size: 1.0625rem;
+  font-weight: 450;
+}
+.prose strong {
+  color: var(--ink);
+}
+.prose ul,
+.prose ol {
+  padding-left: 0;
+  list-style: none;
+  counter-reset: n;
+  border-top: 1px solid var(--frame);
+}
+.prose li {
+  counter-increment: n;
+  padding: 12px 0 11px;
+  border-bottom: 1px solid var(--line-strong);
+  display: flex;
+  gap: 14px;
+}
+.prose :is(ul, ol) > li:first-child {
+  padding-top: 11px;
+}
+.prose li::before {
+  content: counter(n, decimal-leading-zero);
+  font-family: var(--label-font);
+  font-size: 0.75rem;
+  color: var(--mark);
+}
+.prose img {
+  display: block;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  height: auto;
+}
+.prose a {
+  color: var(--mark);
+}
+.prose code {
+  font-family: var(--code);
+  font-size: 0.9em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+  @view-transition {
+    navigation: none;
+  }
+}

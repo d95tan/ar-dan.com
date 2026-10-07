@@ -1,0 +1,95 @@
+---
+import ProjectSheet from './ProjectSheet.astro';
+import type { Project } from '../lib/projects';
+
+interface Props {
+  projects: Project[];
+  filters?: boolean;
+  heading: string;
+  number: string;
+  headingTag?: 'h1' | 'h2';
+}
+
+const { projects, filters = true, heading, number, headingTag: H = 'h2' } = Astro.props;
+const kebab = heading.toLowerCase().replace(/\s+/g, '-');
+---
+
+<section class="project-grid" data-grid>
+  <div class="sec-head">
+    <H>
+      <small class="archi-only">{number}</small><small class="tech-only">//</small><span class="archi-only">{heading}</span><span
+        class="tech-only">{kebab}</span
+      >
+    </H>
+    {
+      filters ? (
+        <div class="btn-group filters" role="group" aria-label="Filter projects">
+          <button type="button" data-f="all" aria-pressed="true">All</button>
+          <button type="button" data-f="architecture" aria-pressed="false">Architecture</button>
+          <button type="button" data-f="software" aria-pressed="false">Software</button>
+        </div>
+      ) : (
+        <slot name="action" />
+      )
+    }
+  </div>
+  <div class="sheets">
+    {projects.map((project, i) => <ProjectSheet project={project} index={i} />)}
+  </div>
+</section>
+
+<script>
+  import { getMode, onModeChange, withTransition } from '../scripts/mode';
+
+  document.querySelectorAll<HTMLElement>('[data-grid]').forEach((grid) => {
+    const list = grid.querySelector<HTMLElement>('.sheets')!;
+    const sheets = [...list.querySelectorAll<HTMLElement>('.sheet')];
+
+    // The current mode's discipline goes first; original order is kept within each group.
+    const order = () => {
+      const first = getMode() === 'archi' ? 'architecture' : 'software';
+      const rank = (el: HTMLElement) => (el.dataset.d === first ? 0 : 1) * 1000 + Number(el.dataset.i);
+      list.append(...sheets.slice().sort((a, b) => rank(a) - rank(b)));
+    };
+    order();
+    onModeChange(() => withTransition(order));
+
+    const buttons = grid.querySelectorAll<HTMLButtonElement>('.filters button');
+    const applyFilter = (f: string) => {
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.f === f)));
+      sheets.forEach((s) => (s.hidden = f !== 'all' && s.dataset.d !== f));
+    };
+    buttons.forEach((b) =>
+      b.addEventListener('click', () => {
+        const f = b.dataset.f ?? 'all';
+        withTransition(() => applyFilter(f));
+        const url = new URL(location.href);
+        if (f === 'all') url.searchParams.delete('d');
+        else url.searchParams.set('d', f);
+        history.replaceState(null, '', url);
+      }),
+    );
+    const initial = new URLSearchParams(location.search).get('d');
+    if (buttons.length && (initial === 'software' || initial === 'architecture')) applyFilter(initial);
+  });
+</script>
+
+<style>
+  .sheets {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--cell);
+  }
+  /* With two columns the gap is two cells, so each column is still a whole number of cells. */
+  @media (max-width: 960px) {
+    .sheets {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--cell) calc(var(--cell) * 2);
+    }
+  }
+  @media (max-width: 620px) {
+    .sheets {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

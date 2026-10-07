@@ -1,0 +1,71 @@
+---
+import Base from '../layouts/Base.astro';
+import SplitHero from '../components/SplitHero.astro';
+import ProjectGrid from '../components/ProjectGrid.astro';
+import { getProjects } from '../lib/projects';
+import { SITE } from '../site';
+
+const projects = await getProjects();
+const featured = projects.filter((p) => p.data.featured);
+const softwareSlugs = projects.filter((p) => p.data.discipline === 'software').map((p) => p.id);
+---
+
+<Base>
+  <SplitHero slugs={softwareSlugs} />
+
+  <div class="wrap">
+    <section class="about" aria-labelledby="about-title">
+      <div class="sec-head">
+        <h2 id="about-title">
+          <small class="archi-only">01</small><small class="tech-only">//</small><span class="archi-only">About</span><span
+            class="tech-only">about</span
+          >
+        </h2>
+        <span class="mono soft">Archi ↔ Tech</span>
+      </div>
+      <div class="about-grid">
+        <p class="lede">{SITE.about.lede}</p>
+        <div class="body">
+          {SITE.about.body.map((p) => <p>{p}</p>)}
+          <a class="link-arrow mono" href="/cv">Read the CV →</a>
+        </div>
+      </div>
+    </section>
+
+    <ProjectGrid projects={featured} heading="Selected work" number="02" filters={false}>
+      <a slot="action" class="link-arrow mono" href="/work">All {projects.length} projects →</a>
+    </ProjectGrid>
+  </div>
+</Base>
+
+<style>
+  .about-grid {
+    display: grid;
+    grid-template-columns: round(down, (100% - var(--cell) * 2) * 0.42, var(--cell)) 1fr;
+    gap: calc(var(--cell) * 2);
+  }
+  .lede {
+    font-family: var(--head-font);
+    font-size: clamp(2rem, 4.4vw, 3.6rem);
+    line-height: var(--lh);
+    letter-spacing: -0.04em;
+    font-weight: 700;
+  }
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--cell);
+    color: var(--ink-soft);
+    font-size: 1.05rem;
+    align-items: flex-start;
+  }
+  .body a {
+    color: var(--ink);
+  }
+  @media (max-width: 860px) {
+    .about-grid {
+      grid-template-columns: 1fr;
+      gap: var(--cell);
+    }
+  }
+</style>

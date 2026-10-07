@@ -1,0 +1,10 @@
+node_modules/
+dist/
+# Full-resolution photos and videos; `npm run images` writes web-sized copies to src/content/projects/images/.
+originals/
+.astro/
+.wrangler/
+.env
+.env.*
+.DS_Store
+Thumbs.db

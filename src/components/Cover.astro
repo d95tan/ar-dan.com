@@ -1,0 +1,30 @@
+---
+import type { ImageMetadata } from 'astro';
+import { Image } from 'astro:assets';
+
+interface Props {
+  src?: string | ImageMetadata;
+  alt: string;
+  label?: string;
+  widths?: number[];
+  sizes?: string;
+  loading?: 'lazy' | 'eager';
+  class?: string;
+  style?: string;
+}
+
+const { src, alt, label, widths = [480, 800, 1200, 1600], sizes = '(min-width: 960px) 33vw, 100vw', loading = 'lazy', class: cls, style } = Astro.props;
+const localWidths = src && typeof src !== 'string' ? widths.filter((w) => w <= src.width).concat(src.width < widths[0] ? [src.width] : []) : [];
+---
+
+{
+  typeof src === 'string' ? (
+    <img src={src} alt={alt} loading={loading} decoding="async" class={cls} style={style} />
+  ) : src ? (
+    <Image src={src} alt={alt} widths={localWidths} sizes={sizes} loading={loading} class={cls} style={style} />
+  ) : (
+    <div class:list={['cover-placeholder', cls]} style={style} role="img" aria-label={alt}>
+      <span class="mono">{label ?? 'No image yet'}</span>
+    </div>
+  )
+}

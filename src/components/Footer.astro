@@ -1,0 +1,52 @@
+---
+import { SITE } from '../site';
+---
+
+<footer id="contact" class="site-footer" data-snap>
+  <div class="wrap">
+    <p class="mono mark">
+      <span class="archi-only">— Contact</span><span class="tech-only">// contact</span>
+    </p>
+    <h2>Let's build<br />something together.</h2>
+    <p class="blurb soft">I enjoy meeting new people, talking about design, and everything else under the sun.</p>
+    <div class="links mono">
+      <a class="mail" href={`mailto:${SITE.email}`}>{SITE.email}</a>
+      {SITE.socials.map((s) => <a href={s.url} rel="me noopener" target="_blank">{s.label}</a>)}
+    </div>
+    <p class="mono soft fine">© {new Date().getFullYear()} {SITE.name}</p>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    --m: calc(var(--cell) * 6);
+    border-top: 1px solid var(--line-strong);
+    padding: calc(var(--cell) * 3 - 1px) 0 calc(var(--cell) * 3);
+  }
+  h2 {
+    font-family: var(--head-font);
+    font-size: clamp(2.5rem, 7vw, 6rem);
+    letter-spacing: -0.04em;
+    line-height: var(--lh);
+    margin-top: var(--cell);
+  }
+  .blurb {
+    margin-top: var(--cell);
+    max-width: 44ch;
+  }
+  .links {
+    margin-top: var(--cell);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--cell);
+  }
+  .links a:hover {
+    color: var(--mark);
+  }
+  .mail {
+    color: var(--mark);
+  }
+  .fine {
+    margin-top: calc(var(--cell) * 2);
+  }
+</style>

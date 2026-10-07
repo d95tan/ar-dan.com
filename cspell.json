@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+  "version": "0.2",
+  "language": "en-GB",
+  "files": [
+    "src/content/**/*.{md,yml}",
+    "src/**/*.astro",
+    "src/site.ts",
+    "README.md"
+  ],
+  "ignorePaths": ["node_modules/**", "dist/**", ".astro/**"],
+  "ignoreRegExpList": ["/\\]\\(\\.\\/[^)]*\\)/g", "/\\.\\/images\\/[^\\s'\"]*/g"],
+  "words": [
+    "AIRBITAT", "Ampang", "arcgis", "Archi", "Archlight", "Bahru", "Boustead", "color", "Consolas", "cwid",
+    "Daxin", "ENOENT", "etagen", "etapod", "etatune", "etavolt", "Fadzil", "faststart", "Fayyaadh", "Felyncia",
+    "Firestore", "Fong", "Fraunces", "frontmatter", "Geylang", "Hafary", "Harlyn", "Hons", "Hwee", "ibdc",
+    "ibuildsg", "Innosparks", "Jalan", "Jinja", "Krakowska", "lede", "libx", "Mapletree", "Margoliouth",
+    "Matplotlib", "Miyauchi", "modechange", "moov", "movflags", "mozjpeg", "Nextcloud", "Politechnika", "PPVC",
+    "prefinished", "pvlib", "Pydantic", "Ramasamy", "rect", "richardho", "SMTWTFS", "Streamlit", "subline",
+    "Tanglin", "tblock", "Tetris", "tetrominoes", "tkhd", "Tomohisa", "trak", "Treehouse", "tropicalise",
+    "Tropos", "Ubin", "Udemy", "vars", "Viknesh", "wordmark", "Wix", "Yoeng"
+  ],
+  "ignoreWords": ["AAPPNO", "AAPPNOOAAPPNNOOAALLLOPPPANOOAAO", "OAAO", "OAAPPNN", "OOAALLL", "OPPPANO"]
+}

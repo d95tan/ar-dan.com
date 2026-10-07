@@ -1,0 +1,91 @@
+# Newest entries are sorted to the top automatically by `start` (YYYY-MM). Leave `end` out for a current role.
+- id: esri
+  title: Software Engineer
+  org: Esri Singapore
+  start: 2026-06
+  summary: Building GIS automation, data pipelines and developer tooling on the ArcGIS platform for Singapore government agencies.
+  points:
+    - Main developer on a government client's batch job programme, splitting a large monolithic job into smaller independent ones for reliability and performance.
+    - Set up the repository, CI/CD and shared libraries for a new batch job team, cutting onboarding from 16 hours to 4.
+    - Ran a three-day course on Python scripting for ArcGIS, and presented our shared Python library to the wider department.
+
+- id: esri-associate
+  title: Associate Software Engineer
+  org: Esri Singapore
+  start: 2025-01
+  end: 2026-06
+  summary: Developed and deployed ArcGIS Pro batch jobs for a national utility's GIS, through to project commissioning, and built the internal tools around them.
+  points:
+    - Main developer on eight production batch jobs, cutting run times from 4 hours to 10 minutes and from 1 hour to 10 minutes on the heaviest jobs.
+    - Product owner of a modular internal Python SDK for GIS automation and REST APIs, saving an estimated 3–5 man-days per project.
+    - Built a bulk editor for ArcGIS Pro project files, cutting configuration from 5 minutes to about 30 seconds per file.
+
+- id: etavolt
+  title: Software Engineer
+  org: EtaVolt Pte Ltd
+  start: 2024-05
+  end: 2024-11
+  summary: Full-stack software engineer with a focus on backend services.
+  points:
+    - Designed and developed three solar lifecycle management products using React, FastAPI, SQLite, Streamlit and Firebase/Firestore.
+    - Worked closely with product owners and customers to deliver and deploy revenue-generating products.
+    - Deployed to AWS and GCP through GitHub Actions CI/CD pipelines.
+    - Built visualisations with Three.js, MapBox and Chart.js.
+    - Part of the team that closed the first software sale to an external customer.
+    - Sprint planning and reviews, code review for teammates and interns, and intern mentoring.
+    - Managed projects with GitHub Projects and Trello.
+    - Presented technical solutions to clients, investors and stakeholders.
+
+- id: ar-dan-interiors
+  title: Interior Designer
+  org: ar-dan.com (freelance)
+  start: 2021-06
+  summary: Independent residential interior design projects.
+
+- id: richardho-architect
+  title: Assistant Architect
+  org: RichardHO Architects
+  start: 2021-06
+  end: 2023-11
+  summary: 'Project planning, design development, and project and construction management on residential projects, with a focus on user-centric, sustainable and functional design. Worked with stakeholders to manage timelines, budgets and design standards. Projects (not as Qualified Person):'
+  points:
+    - 6 Chatsworth Park — design, authorities, tender, construction
+    - 10 Harlyn Road — design, authorities, tender
+    - 14 Jalan Ampang — design (during internship), authorities, construction, completion
+    - 28 Duchess Avenue — design, construction
+    - 6 Margoliouth Road — authorities, construction, completion
+    - 30 Sunset View — interior design proposal
+
+- id: richardho-intern
+  title: Architectural Intern
+  org: RichardHO Architects
+  start: 2019-06
+  end: 2019-12
+  summary: Worked closely with the Principal Architect and Senior Architect (not as Qualified Person) on residential and commercial projects.
+  points:
+    - 9 Robin Walk — design, construction
+    - 6 Margoliouth Road — design
+    - 14 Jalan Ampang — design
+    - 28 Duchess Avenue — design
+    - 17 Merino Crescent — design, authorities
+    - Ang Chin Moh Funeral Home, Blk 89 Geylang Bahru — commercial
+
+- id: innosparks
+  title: Associate Engineer, Innosparks Open Lab
+  org: ST Engineering
+  start: 2017-06
+  end: 2017-07
+  summary: Part of the development, testing and deployment team for the AIRBITAT, running performance tests alongside researchers and technicians and assisting with manufacture and production.
+
+- id: ncs
+  title: Field Services Engineer
+  org: NCS Group
+  start: 2016-03
+  end: 2016-06
+  summary: Supported the rollout of more than 200 new 64-bit systems at the Inland Revenue Authority of Singapore (IRAS), managing OS updates and group policies and troubleshooting software, hardware and networking issues. The rollout to all IRAS staff was completed by the end of Q2 2016.
+
+- id: saf
+  title: Platoon Commander
+  org: Singapore Armed Forces, Basic Military Training Centre
+  start: 2015-04
+  end: 2016-03

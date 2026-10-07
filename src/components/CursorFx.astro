@@ -1,0 +1,110 @@
+<div class="xh-x" aria-hidden="true"></div>
+<div class="xh-y" aria-hidden="true"></div>
+<div class="ln" aria-hidden="true"></div>
+<div class="status mono" aria-hidden="true"></div>
+
+<script>
+  import { getMode } from '../scripts/mode';
+
+  if (matchMedia('(pointer: fine)').matches) {
+    const root = document.documentElement;
+    const xx = document.querySelector<HTMLElement>('.xh-x')!;
+    const yy = document.querySelector<HTMLElement>('.xh-y')!;
+    const ln = document.querySelector<HTMLElement>('.ln')!;
+    const status = document.querySelector<HTMLElement>('.status')!;
+    const cell = parseFloat(getComputedStyle(root).getPropertyValue('--cell')) || 24;
+    const colWidth = 9.6;
+    const pad = (n: number) => String(n).padStart(4, '0');
+    let last: PointerEvent | null = null;
+    let queued = false;
+
+    const draw = () => {
+      queued = false;
+      if (!last) return;
+      const { clientX, clientY, pageX, pageY } = last;
+      xx.style.transform = `translateY(${clientY}px)`;
+      yy.style.transform = `translateX(${clientX}px)`;
+      const row = Math.floor(pageY / cell);
+      ln.style.transform = `translateY(${row * cell - scrollY}px)`;
+      status.textContent =
+        getMode() === 'archi'
+          ? `X ${pad(Math.round(pageX))} · Y ${pad(Math.round(pageY))}`
+          : `Ln ${row + 1}, Col ${Math.floor(pageX / colWidth) + 1}`;
+    };
+
+    addEventListener('pointermove', (e) => {
+      if (e.pointerType !== 'mouse') return;
+      last = e;
+      root.classList.add('cursor-on');
+      if (!queued) {
+        queued = true;
+        requestAnimationFrame(draw);
+      }
+    });
+    document.addEventListener('pointerleave', () => root.classList.remove('cursor-on'));
+    addEventListener('modechange', draw);
+  }
+</script>
+
+<style>
+  .xh-x,
+  .xh-y,
+  .ln,
+  .status {
+    position: fixed;
+    pointer-events: none;
+    z-index: 50;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .xh-x {
+    left: 0;
+    right: 0;
+    top: 0;
+    height: 1px;
+    background: var(--mark);
+  }
+  .xh-y {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 1px;
+    background: var(--mark);
+  }
+  .ln {
+    left: 0;
+    right: 0;
+    top: 0;
+    height: var(--cell);
+    background: #7ee78712;
+    border-block: 1px solid #7ee78738;
+  }
+  .status {
+    z-index: 51;
+    bottom: 16px;
+    left: 16px;
+    padding: 6px 10px;
+    background: var(--ink);
+    color: var(--paper);
+  }
+  :global([data-mode='tech']) .status {
+    background: #1f6feb;
+    color: #fff;
+    border-radius: 4px;
+  }
+  :global(.cursor-on[data-mode='archi']) :is(.xh-x, .xh-y) {
+    opacity: 0.35;
+  }
+  :global(.cursor-on[data-mode='tech']) .ln,
+  :global(.cursor-on) .status {
+    opacity: 1;
+  }
+  @media (pointer: coarse) {
+    .xh-x,
+    .xh-y,
+    .ln,
+    .status {
+      display: none;
+    }
+  }
+</style>

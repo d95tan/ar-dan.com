@@ -1,0 +1,19 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "ar-dan",
+  "compatibility_date": "2026-10-01",
+  "workers_dev": false,
+  "preview_urls": false,
+  "assets": {
+    "directory": "./dist",
+    "not_found_handling": "404-page"
+  },
+  // Production custom domains are added at DNS cutover, once the Wix records for ar-dan.com and www are deleted;
+  // Cloudflare refuses to attach a custom domain while another record exists for that hostname.
+  "env": {
+    "staging": {
+      "name": "ar-dan-staging",
+      "routes": [{ "pattern": "staging.ar-dan.com", "custom_domain": true }]
+    }
+  }
+}

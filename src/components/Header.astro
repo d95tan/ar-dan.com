@@ -1,0 +1,157 @@
+---
+import { SITE } from '../site';
+
+interface Props {
+  sheet?: string;
+}
+
+const { sheet = 'A-001' } = Astro.props;
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const nav = [
+  { href: '/work', label: 'Work' },
+  { href: '/cv', label: 'CV' },
+  { href: '/#contact', label: 'Contact' },
+];
+const branch = path === '/' ? 'main' : path.slice(1).split('/').join('/');
+---
+
+<header class="site-header">
+  <div class="wrap">
+    <div class="cell">
+      <a class="logo" href="/">
+        <svg class="logo-mark" viewBox="0 0 32 32" aria-hidden="true">
+          <rect width="32" height="32" rx="6" />
+          <path d="M18.6 3.4V28.4M18.6 11.8H11.4A5.4 5.4 0 0 0 6 17.2V20.8A5.4 5.4 0 0 0 11.4 26.2H18.6" />
+          <rect class="dot" x="22.4" y="24" width="7" height="4.4" />
+        </svg>
+        {SITE.shortName}
+      </a>
+      <span class="mono soft">{SITE.name}</span>
+    </div>
+    <div class="cell nav-cell">
+      <nav class="mono" aria-label="Main">
+        {nav.map((n) => <a href={n.href} aria-current={path.startsWith(n.href) ? 'page' : undefined}>{n.label}</a>)}
+      </nav>
+    </div>
+    <div class="cell">
+      <div class="btn-group mode-toggle" role="group" aria-label="Site mode">
+        <button type="button" data-to="archi" aria-pressed="false">Archi</button>
+        <button type="button" data-to="tech" aria-pressed="false">Tech</button>
+      </div>
+    </div>
+    <div class="cell sheet-cell mono">
+      <span class="archi-only">Sheet {sheet}</span>
+      <span class="tech-only">{branch} ✓</span>
+    </div>
+  </div>
+</header>
+
+<script>
+  import { getMode, setMode, onModeChange } from '../scripts/mode';
+
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.mode-toggle button');
+  const sync = () => buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.to === getMode())));
+  buttons.forEach((b) => b.addEventListener('click', () => setMode(b.dataset.to === 'archi' ? 'archi' : 'tech')));
+  onModeChange(sync);
+  sync();
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: color-mix(in srgb, var(--paper) 88%, transparent);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line-strong);
+    transition: background-color 0.5s;
+  }
+  .wrap {
+    display: grid;
+    grid-template-columns: auto 1fr auto auto;
+  }
+  .cell {
+    padding: 0 var(--cell);
+    height: calc(var(--header-h) - 1px);
+    border-right: 1px solid var(--line-strong);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .cell:first-child {
+    border-left: 1px solid var(--line-strong);
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    text-decoration: none;
+  }
+  .logo-mark {
+    width: 24px;
+    height: 24px;
+    flex: none;
+  }
+  .logo-mark rect {
+    fill: var(--ink);
+  }
+  .logo-mark path {
+    fill: none;
+    stroke: var(--paper);
+    stroke-width: 4.4;
+  }
+  .logo-mark .dot {
+    fill: var(--mark);
+  }
+  nav {
+    display: flex;
+    gap: 28px;
+    justify-content: center;
+    width: 100%;
+  }
+  nav a {
+    text-decoration: none;
+    position: relative;
+  }
+  nav a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 100%;
+    bottom: -4px;
+    height: 1px;
+    background: var(--mark);
+    transition: right 0.3s;
+  }
+  nav a:hover::after,
+  nav a[aria-current='page']::after {
+    right: 0;
+  }
+  .mode-toggle button {
+    padding: 6px 12px;
+  }
+  @media (max-width: 960px) {
+    .sheet-cell {
+      display: none;
+    }
+    .wrap {
+      grid-template-columns: auto 1fr auto;
+    }
+    nav {
+      gap: 16px;
+    }
+  }
+  @media (max-width: 620px) {
+    .cell {
+      padding: 0 12px;
+    }
+    .cell:first-child .soft {
+      display: none;
+    }
+    .wrap {
+      width: 100%;
+    }
+  }
+</style>

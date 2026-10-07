@@ -1,0 +1,357 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Cover from '../../components/Cover.astro';
+import { getProjects, disciplineLabel, galleryItems, yearLabel, type Project } from '../../lib/projects';
+
+export const getStaticPaths = (async () => {
+  const projects = await getProjects();
+  return projects.map((project, i) => ({
+    params: { slug: project.id },
+    props: {
+      project,
+      prev: projects[(i - 1 + projects.length) % projects.length],
+      next: projects[(i + 1) % projects.length],
+    },
+  }));
+}) satisfies GetStaticPaths;
+
+interface Props {
+  project: Project;
+  prev: Project;
+  next: Project;
+}
+
+const { project, prev, next } = Astro.props;
+const { data, id } = project;
+const { Content } = await render(project);
+const gallery = galleryItems(project);
+// Pairs of images share a row and are scaled to the same height. A lone landscape image at the end
+// spans the full width; a lone portrait one is kept narrow with an empty spacer beside it.
+const galleryRows: (typeof gallery[number] | null)[][] = [];
+for (let i = 0; i < gallery.length; i += 2) {
+  const row = gallery.slice(i, i + 2);
+  galleryRows.push(row.length === 1 && row[0].ratio < 1.2 ? [row[0], null] : row);
+}
+const ogImage = typeof data.cover === 'string' ? data.cover : data.cover ? new URL(data.cover.src, Astro.site).href : undefined;
+const specs = [
+  { k: 'Discipline', v: disciplineLabel(data.discipline) },
+  { k: 'Year', v: yearLabel(project) },
+  data.org && { k: data.discipline === 'software' ? 'Company' : 'Practice', v: data.org },
+  data.role && { k: 'Role', v: data.role },
+].filter(Boolean) as { k: string; v: string }[];
+---
+
+<Base title={data.title} description={data.summary} image={ogImage} sheet={project.sheet}>
+  <div class="wrap">
+    <nav class="crumbs mono" aria-label="Breadcrumb">
+      <a href="/work">← <span class="archi-only">All work</span><span class="tech-only">cd ../work</span></a>
+      <span class="soft">{project.sheet}</span>
+    </nav>
+
+    <article class="spec">
+      <div class="shot">
+        <Cover
+          src={data.cover}
+          alt={data.coverAlt ?? data.title}
+          label={project.sheet}
+          loading="eager"
+          sizes="(min-width: 960px) 60vw, 100vw"
+          style={`view-transition-name: cover-${id}`}
+        />
+      </div>
+      <div class="text">
+        <p class="mono mark" data-snap>{project.sheet} · {data.org ?? disciplineLabel(data.discipline)} · {yearLabel(project)}</p>
+        <h1>{data.title}</h1>
+        <p class="lede">{data.summary}</p>
+        <dl class="spec-table">
+          {
+            specs.map((s) => (
+              <div>
+                <dt class="mono soft">{s.k}</dt>
+                <dd>{s.v}</dd>
+              </div>
+            ))
+          }
+        </dl>
+        {
+          data.stack.length > 0 && (
+            <div class="stack" aria-label="Stack">
+              {data.stack.map((s) => <span class="tag">{s}</span>)}
+            </div>
+          )
+        }
+        {
+          data.links.length > 0 && (
+            <div class="links">
+              {data.links.map((l) => (
+                <a class="link-arrow mono" href={l.url} target="_blank" rel="noopener">
+                  {l.label} ↗
+                </a>
+              ))}
+            </div>
+          )
+        }
+      </div>
+    </article>
+
+    <div class="body" data-snap>
+      <div class="prose"><Content /></div>
+    </div>
+
+    {
+      gallery.length > 0 && (
+        <section class="gallery" aria-label="Gallery" data-snap>
+          {galleryRows.map((row, r) => (
+            <div class="row" style={`--sum: ${row.reduce((n, img) => n + (img ? img.ratio : 1.333), 0)}; --n: ${row.length}`}>
+              {row.map((img, c) =>
+                img ? (
+                  <figure style={`--r: ${img.ratio}`}>
+                    {img.kind === 'video' ? (
+                      <video
+                        src={`${img.src}#t=0.001`}
+                        muted
+                        loop
+                        playsinline
+                        preload="metadata"
+                        aria-label={`${data.title} — video, gallery item ${r * 2 + c + 2}`}
+                        style={`aspect-ratio: ${img.ratio}`}
+                        data-autoplay
+                      />
+                    ) : (
+                      <Cover src={img.src} alt={`${data.title} — image ${r * 2 + c + 2}`} sizes="(min-width: 960px) 50vw, 100vw" style={`aspect-ratio: ${img.ratio}`} />
+                    )}
+                  </figure>
+                ) : (
+                  <div class="spacer" aria-hidden="true" />
+                ),
+              )}
+            </div>
+          ))}
+        </section>
+      )
+    }
+
+    <nav class="pager" aria-label="More projects" data-snap>
+      <a href={`/work/${prev.id}`}>
+        <span class="mono soft">← Previous · {prev.sheet}</span>
+        <b>{prev.data.title}</b>
+      </a>
+      <a href={`/work/${next.id}`} class="next">
+        <span class="mono soft">Next · {next.sheet} →</span>
+        <b>{next.data.title}</b>
+      </a>
+    </nav>
+  </div>
+</Base>
+
+<script>
+  import { prefersReducedMotion } from '../../scripts/mode';
+
+  // Gallery videos play muted on a loop while on screen. With reduced motion they stay paused, with controls.
+  const videos = document.querySelectorAll<HTMLVideoElement>('video[data-autoplay]');
+  if (prefersReducedMotion()) videos.forEach((v) => (v.controls = true));
+  else {
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const { target, isIntersecting } of entries) {
+          const v = target as HTMLVideoElement;
+          if (isIntersecting) v.play().catch(() => (v.controls = true));
+          else v.pause();
+        }
+      },
+      { threshold: 0.25 },
+    );
+    videos.forEach((v) => io.observe(v));
+  }
+</script>
+
+<style>
+  .crumbs {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--cell) 0;
+  }
+  .crumbs a {
+    text-decoration: none;
+  }
+  .crumbs a:hover {
+    color: var(--mark);
+  }
+  .spec {
+    display: grid;
+    grid-template-columns: round(down, 57%, var(--cell)) 1fr;
+    border: 1px solid var(--frame);
+    border-radius: var(--radius);
+    background: var(--panel);
+    overflow: hidden;
+  }
+  .shot {
+    border-right: 1px solid var(--frame);
+    padding: calc(var(--cell) - 1px);
+    display: flex;
+    align-items: center;
+  }
+  .shot :global(img),
+  .shot :global(.cover-placeholder) {
+    width: 100%;
+    height: auto;
+    display: block;
+    border: 1px solid var(--line-strong);
+  }
+  .shot :global(.cover-placeholder) {
+    aspect-ratio: 4 / 3;
+  }
+  .text {
+    padding: calc(var(--cell) - 1px) var(--cell) var(--cell);
+    display: flex;
+    flex-direction: column;
+    gap: var(--cell);
+  }
+  h1 {
+    font-family: var(--head-font);
+    font-size: clamp(2.2rem, 4vw, 3.2rem);
+    letter-spacing: -0.04em;
+    line-height: var(--lh);
+  }
+  .lede {
+    font-size: 1.15rem;
+  }
+  .spec-table {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    border-top: 1px solid var(--frame);
+  }
+  .spec-table div {
+    padding: calc(var(--cell) / 2) 0 calc(var(--cell) / 2 - 1px);
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .spec-table div:nth-child(-n + 2) {
+    padding-top: calc(var(--cell) / 2 - 1px);
+  }
+  .spec-table div:nth-child(even) {
+    border-left: 1px solid var(--line-strong);
+    padding-left: calc(var(--cell) / 2);
+  }
+  dd {
+    font-weight: 500;
+  }
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 6px;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--cell);
+  }
+  .body {
+    --m: calc(var(--cell) * 3);
+    display: grid;
+    grid-template-columns: 1fr minmax(0, 68ch) 1fr;
+  }
+  .body .prose {
+    grid-column: 2;
+  }
+  .gallery {
+    --m: calc(var(--cell) * 3);
+    display: grid;
+    gap: var(--cell);
+  }
+  /* Caps row height at ~75% of the screen: rows of tall images get narrower and centred instead. */
+  .gallery .row {
+    display: flex;
+    gap: var(--cell);
+    justify-self: center;
+    width: 100%;
+    max-width: calc(var(--sum) * 75svh + var(--n) * var(--cell) * 2 - var(--cell));
+  }
+  /* Width grows with aspect ratio; the basis equals the frame (padding + border = one cell), so every image in a row ends up the same height. */
+  .gallery figure {
+    flex: var(--r) 1 var(--cell);
+    min-width: 0;
+    border: 1px solid var(--frame);
+    border-radius: var(--radius);
+    padding: calc(var(--cell) / 2 - 1px);
+    background: var(--panel);
+  }
+  .gallery .spacer {
+    flex: 1.333 1 var(--cell);
+  }
+  .gallery :global(img),
+  .gallery video {
+    width: 100%;
+    height: auto;
+    display: block;
+    object-fit: cover;
+  }
+  .pager {
+    --m: calc(var(--cell) * 4);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border: 1px solid var(--frame);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .pager a {
+    padding: calc(var(--cell) - 1px) var(--cell);
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    background: var(--panel);
+    transition: background-color 0.3s;
+  }
+  .pager a:hover {
+    background: var(--line);
+  }
+  .pager a:hover b {
+    color: var(--mark);
+  }
+  .pager .next {
+    border-left: 1px solid var(--frame);
+    text-align: right;
+  }
+  .pager b {
+    font-family: var(--head-font);
+    font-size: 1.4rem;
+    letter-spacing: -0.02em;
+    line-height: var(--lh);
+  }
+  @media (max-width: 960px) {
+    .spec {
+      grid-template-columns: 1fr;
+    }
+    .shot {
+      border-right: 0;
+      border-bottom: 1px solid var(--frame);
+    }
+    .body {
+      display: block;
+    }
+  }
+  @media (max-width: 620px) {
+    .pager {
+      grid-template-columns: 1fr;
+    }
+    .gallery .row {
+      flex-direction: column;
+      max-width: none;
+    }
+    .gallery figure {
+      flex: none;
+    }
+    .gallery .spacer {
+      display: none;
+    }
+    .pager .next {
+      border-left: 0;
+      border-top: 1px solid var(--frame);
+      padding-top: var(--cell);
+    }
+    .text {
+      padding: calc(var(--cell) - 1px) var(--cell);
+    }
+  }
+</style>

@@ -1,0 +1,30 @@
+---
+import Base from '../layouts/Base.astro';
+---
+
+<Base title="Not found" sheet="A-404">
+  <div class="wrap lost">
+    <p class="mono mark"><span class="archi-only">Sheet missing from the set</span><span class="tech-only">Error: ENOENT</span></p>
+    <h1>404</h1>
+    <p class="soft">This page isn't on the drawings. It may have moved when the site left Wix.</p>
+    <a class="link-arrow mono" href="/work">Browse all work →</a>
+  </div>
+</Base>
+
+<style>
+  .lost {
+    padding-top: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+  }
+  h1 {
+    font-family: var(--head-font);
+    font-size: clamp(6rem, 20vw, 14rem);
+    line-height: 0.85;
+    letter-spacing: -0.06em;
+    color: transparent;
+    -webkit-text-stroke: 2px var(--ink);
+  }
+</style>

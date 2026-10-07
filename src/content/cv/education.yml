@@ -1,0 +1,24 @@
+- id: general-assembly
+  title: Software Engineering Immersive
+  org: General Assembly
+  start: 2023-11
+  end: 2024-02
+  summary: Full-time immersive covering JavaScript, React, Node.js and MongoDB, data structures, algorithms and software engineering practice. Projects included a Tetris remake and travel and finance planning apps.
+
+- id: m-arch
+  title: Master of Architecture (M.Arch)
+  org: National University of Singapore
+  start: 2019-08
+  end: 2021-07
+
+- id: exchange
+  title: Student Exchange Programme, Architecture
+  org: Politechnika Krakowska (Cracow University of Technology), Poland
+  start: 2018-08
+  end: 2019-01
+
+- id: ba-arch
+  title: Bachelor of Arts in Architecture (Hons)
+  org: National University of Singapore
+  start: 2016-08
+  end: 2020-07

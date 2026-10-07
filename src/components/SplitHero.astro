@@ -1,0 +1,459 @@
+---
+import Cover from './Cover.astro';
+import { SITE } from '../site';
+
+interface Props {
+  slugs: string[];
+}
+
+const { slugs } = Astro.props;
+const { hero } = SITE;
+
+// Terminal script as [className, text] segments; typed out on load.
+const lines: [string, string][] = [
+  ['p', '$ '], ['c', 'whoami\n'], ['', `${hero.whoami}\n\n`],
+  ['p', '$ '], ['c', 'cat history.log\n'],
+  ...SITE.history.flatMap(([year, what], i, all): [string, string][] => [
+    ['k', `${year}  `],
+    [i === all.length - 1 ? 's' : '', `${what}\n`],
+  ]),
+  ['', '\n'], ['p', '$ '], ['c', 'ls projects/\n'], ['', `${slugs.join('  ')}\n\n`], ['p', '$ '],
+];
+---
+
+<section class="split" aria-label="Introduction">
+  <div class="side side-archi">
+    <Cover src={hero.image} alt={hero.imageAlt} loading="eager" sizes="100vw" widths={[1200, 1800, 2400]} class="photo" />
+    <span class="reg tl" aria-hidden="true"></span><span class="reg bl" aria-hidden="true"></span>
+    <div class="intro">
+      <h1 set:html={hero.headline.replace('\n', '<br />')} />
+      <p>{hero.subline}</p>
+    </div>
+    <div class="foot">
+      <div class="big" aria-hidden="true">Archi</div>
+      <div class="cap mono">{hero.caption}</div>
+    </div>
+  </div>
+
+  <div class="side side-tech">
+    <div class="term">
+      <div class="bar" aria-hidden="true"><i></i><i></i><i></i><span>~/dan — zsh</span></div>
+      <div class="screen">
+        <pre class="ghost" aria-hidden="true">{lines.map(([, t]) => t).join('')}<span class="caret"></span></pre>
+        <pre data-lines={JSON.stringify(lines)}>{lines.map(([, t]) => t).join('')}</pre>
+      </div>
+    </div>
+    <div class="foot">
+      <div class="big" aria-hidden="true">Tech<span>_</span></div>
+      <div class="cap">~/dan/portfolio · main</div>
+    </div>
+  </div>
+
+  <div class="divider" role="slider" tabindex="0" aria-label="Drag between architecture and software" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50">
+    <div class="handle" aria-hidden="true">↔</div>
+  </div>
+  <div class="hint mono" aria-hidden="true">Drag</div>
+</section>
+
+<script>
+  import { setMode, onModeChange, prefersReducedMotion } from '../scripts/mode';
+
+  const split = document.querySelector<HTMLElement>('.split');
+  if (split) {
+    const divider = split.querySelector<HTMLElement>('.divider')!;
+    const set = (pct: number) => {
+      pct = Math.max(4, Math.min(96, pct));
+      split.style.setProperty('--split', `${pct}%`);
+      divider.setAttribute('aria-valuenow', String(Math.round(pct)));
+      return pct;
+    };
+    const current = () => parseFloat(split.style.getPropertyValue('--split')) || 50;
+    const dragTo = (pct: number) => {
+      pct = set(pct);
+      if (pct !== 50) setMode(pct > 50 ? 'archi' : 'tech', 'drag');
+    };
+
+    set(50);
+    onModeChange(({ mode, source }) => {
+      if (source === 'drag') return;
+      split.classList.add('animating');
+      set(mode === 'archi' ? 78 : 22);
+      setTimeout(() => split.classList.remove('animating'), 950);
+    });
+
+    let dragging = false;
+    const pos = (e: PointerEvent) => ((e.clientX - split.getBoundingClientRect().left) / split.clientWidth) * 100;
+    split.addEventListener('pointerdown', (e) => {
+      if ((e.target as HTMLElement).closest('.term')) return;
+      dragging = true;
+      split.classList.add('dragging');
+      split.setPointerCapture(e.pointerId);
+      dragTo(pos(e));
+    });
+    split.addEventListener('pointermove', (e) => dragging && dragTo(pos(e)));
+    const stop = () => {
+      dragging = false;
+      split.classList.remove('dragging');
+    };
+    split.addEventListener('pointerup', stop);
+    split.addEventListener('pointercancel', stop);
+    divider.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') dragTo(current() - 5);
+      else if (e.key === 'ArrowRight') dragTo(current() + 5);
+      else if (e.key === 'Home') dragTo(4);
+      else if (e.key === 'End') dragTo(96);
+      else return;
+      e.preventDefault();
+    });
+
+    // Typed terminal intro
+    const pre = split.querySelector<HTMLPreElement>('.term pre[data-lines]')!;
+    const lines: [string, string][] = JSON.parse(pre.dataset.lines!);
+    const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+    const total = lines.reduce((n, [, t]) => n + t.length, 0);
+    const render = (n: number) => {
+      let left = n;
+      let html = '';
+      for (const [cls, text] of lines) {
+        if (left <= 0) break;
+        const part = esc(text.slice(0, left));
+        left -= text.length;
+        html += cls ? `<span class="${cls}">${part}</span>` : part;
+      }
+      pre.innerHTML = html + '<span class="caret"></span>';
+    };
+    if (prefersReducedMotion()) render(total);
+    else {
+      let n = 0;
+      const id = setInterval(() => {
+        render((n += 2));
+        if (n >= total) clearInterval(id);
+      }, 28);
+    }
+  }
+</script>
+
+<style>
+  .split {
+    --split: 50%;
+    position: relative;
+    display: grid;
+    min-height: calc(var(--cell) * 25);
+    min-height: max(calc(var(--cell) * 25), round(down, 100svh - var(--header-h), var(--cell)));
+    overflow: hidden;
+    user-select: none;
+    touch-action: pan-y;
+    border-bottom: 1px solid var(--line-strong);
+  }
+  .side {
+    position: relative;
+    grid-area: 1 / 1;
+    isolation: isolate;
+    z-index: 0;
+  }
+  .side-archi {
+    background: #1d1611;
+  }
+  .side-archi :global(.photo) {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -1;
+  }
+  .side-archi::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: linear-gradient(90deg, #0009, #0000 60%), linear-gradient(0deg, #000a, #0000 50%);
+  }
+  /* The Tech side is in normal flow so the hero grows to fit the terminal and wordmark instead of overlapping them. */
+  .side-tech {
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: calc(var(--cell) * 2);
+    padding: var(--top) var(--edge) calc(var(--cell) * 2);
+    clip-path: inset(0 0 0 var(--split));
+    color: #e6edf3;
+    background-color: #0d1117;
+    background-image: radial-gradient(circle at 1px 1px, #2a3038 1px, transparent 1.5px);
+    background-size: var(--cell) var(--cell);
+    background-position: calc(50% + var(--cell) / 2) 0;
+  }
+  .split.animating .side-tech {
+    transition: clip-path 0.9s cubic-bezier(0.7, 0, 0.2, 1);
+  }
+  .split.animating :is(.divider, .hint) {
+    transition: left 0.9s cubic-bezier(0.7, 0, 0.2, 1);
+  }
+
+  .split {
+    --edge: calc((100% - var(--wrap-w)) / 2);
+    --top: round(9vh, var(--cell));
+  }
+  .foot {
+    position: absolute;
+    bottom: calc(var(--cell) * 2);
+    display: flex;
+    flex-direction: column;
+    gap: var(--cell);
+  }
+  .side-archi .foot {
+    left: var(--edge);
+    align-items: flex-start;
+  }
+  .side-tech .foot {
+    position: static;
+    margin-top: auto;
+    align-items: flex-end;
+  }
+  .big {
+    font-size: clamp(4.5rem, 12vw, 12rem);
+    line-height: 0.85;
+  }
+  /* Keeps the underscore, which hangs below the baseline, clear of the caption. */
+  .side-tech .big {
+    padding-bottom: 0.08em;
+  }
+  .side-archi .big {
+    font-family: var(--serif);
+    font-style: italic;
+    font-weight: 300;
+    color: #f6efe4;
+    letter-spacing: -0.04em;
+  }
+  .side-tech .big {
+    font-family: var(--code);
+    font-weight: 600;
+    letter-spacing: -0.07em;
+  }
+  .side-tech .big span {
+    color: #7ee787;
+  }
+  .intro {
+    position: absolute;
+    left: var(--edge);
+    top: var(--top);
+    color: #f6efe4;
+    max-width: 30ch;
+  }
+  .intro h1 {
+    font-family: var(--sans);
+    font-size: clamp(2rem, 3.6vw, 3.2rem);
+    line-height: var(--lh);
+    letter-spacing: -0.03em;
+  }
+  .intro p {
+    margin-top: var(--cell);
+    opacity: 0.85;
+  }
+  .cap {
+    font-size: 0.78rem;
+  }
+  .side-archi .cap {
+    color: #fffc;
+    font-family: var(--mono);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .side-tech .cap {
+    color: #8b949e;
+    font-family: var(--code);
+  }
+  .reg {
+    position: absolute;
+    width: var(--cell);
+    height: var(--cell);
+    border: 0 solid #fff9;
+  }
+  .reg.tl {
+    top: var(--cell);
+    left: calc(var(--edge) - var(--cell));
+    border-width: 1px 0 0 1px;
+  }
+  .reg.bl {
+    bottom: var(--cell);
+    left: calc(var(--edge) - var(--cell));
+    border-width: 0 0 1px 1px;
+  }
+
+  .term {
+    width: round(down, min(552px, 40vw), var(--cell));
+    background: #11161dee;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    font-family: var(--code);
+    font-size: 0.85rem;
+    box-shadow: 0 30px 80px #0008;
+    user-select: text;
+  }
+  .bar {
+    display: flex;
+    gap: 6px;
+    padding: 12px 14px;
+    border-bottom: 1px solid #30363d;
+    align-items: center;
+  }
+  .bar i {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+  }
+  .bar i:nth-child(1) {
+    background: #ff5f57;
+  }
+  .bar i:nth-child(2) {
+    background: #febc2e;
+  }
+  .bar i:nth-child(3) {
+    background: #28c840;
+  }
+  .bar span {
+    margin-left: auto;
+    color: #8b949e;
+    font-size: 0.75rem;
+  }
+  .screen {
+    display: grid;
+  }
+  pre {
+    grid-area: 1 / 1;
+    padding: 16px 18px 20px;
+    white-space: pre-wrap;
+    font: inherit;
+    line-height: 1.7;
+  }
+  .ghost {
+    visibility: hidden;
+  }
+  pre :global(.p) {
+    color: #7ee787;
+  }
+  pre :global(.c) {
+    color: #79c0ff;
+  }
+  pre :global(.k) {
+    color: #8b949e;
+  }
+  pre :global(.s) {
+    color: #ffa657;
+  }
+  pre :global(.caret) {
+    display: inline-block;
+    width: 0.6em;
+    height: 1.1em;
+    background: #7ee787;
+    vertical-align: text-bottom;
+    animation: blink 1s steps(1) infinite;
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0;
+    }
+  }
+
+  .divider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: var(--split);
+    z-index: 5;
+    cursor: ew-resize;
+  }
+  .divider::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -1px;
+    width: 2px;
+    background: #fff;
+  }
+  .handle {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    translate: -50% -50%;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #fff;
+    color: #111;
+    display: grid;
+    place-items: center;
+    font-size: 1.2rem;
+    box-shadow: 0 10px 30px #0006;
+    transition: scale 0.2s;
+  }
+  .divider:hover .handle,
+  .divider:focus-visible .handle,
+  .split.dragging .handle {
+    scale: 1.1;
+  }
+  .hint {
+    position: absolute;
+    z-index: 6;
+    left: var(--split);
+    top: calc(50% + 44px);
+    translate: -50% 0;
+    color: #fff;
+    opacity: 0.8;
+    white-space: nowrap;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-family: var(--mono);
+  }
+
+  /* Short, wide screens (laptops with browser chrome): size by height too so the hero still fits on one screen. */
+  @media (min-width: 721px) and (max-height: 920px) {
+    .split {
+      --top: calc(var(--cell) * 2);
+    }
+    .side-tech {
+      gap: var(--cell);
+      padding-bottom: var(--cell);
+    }
+    .side-tech .foot {
+      gap: calc(var(--cell) / 2);
+    }
+    .term {
+      font-size: clamp(0.66rem, 1.6vh, 0.85rem);
+    }
+    .bar {
+      padding: 10px 14px;
+    }
+    pre {
+      padding: 12px 16px 14px;
+      line-height: 1.55;
+    }
+    .big {
+      font-size: clamp(4.5rem, min(12vw, 17vh), 12rem);
+    }
+  }
+
+  @media (max-width: 720px) {
+    .split {
+      display: block;
+      min-height: 0;
+    }
+    .side {
+      min-height: round(72svh, var(--cell));
+    }
+    .side-tech {
+      clip-path: none;
+      min-height: 0;
+      padding: var(--cell) var(--edge) calc(var(--cell) * 2);
+    }
+    .term {
+      width: 100%;
+    }
+    .divider,
+    .hint {
+      display: none;
+    }
+  }
+</style>
