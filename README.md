@@ -31,6 +31,7 @@ npm run preview  # serves dist/ to check the production build
 npm run check    # type-checks the content and components
 npm run images   # makes web-sized copies of originals/ (see Images)
 npm run check:assets  # fails on committed originals (oversized or with EXIF/GPS)
+npm run test:e2e # browser smoke tests against dist/ (see Testing)
 ```
 
 ### Add a project
@@ -68,13 +69,33 @@ Gallery items are laid out two to a row and scaled to the same height, so portra
 
 | To change | Edit |
 | --- | --- |
-| Name, email, socials, hero photo, about text, terminal history | `src/site.ts` |
+| Name, email, socials, hero photo, about text, CV intro, terminal history | `src/site.ts` |
 | Jobs, education, awards, certifications | `src/content/cv/*.yml` (newest first, by `start`) |
 | Colours, fonts, grid size | top of `src/styles/global.css` |
 | Default mode for first-time visitors | `defaultMode` in `src/site.ts` |
 | Browser tab icon | `public/favicon.svg` |
 | Phone home-screen icon | `scripts/apple-touch-icon.mjs`, then `node scripts/apple-touch-icon.mjs` |
 | Redirects from old URLs | `redirects` in `astro.config.mjs` |
+| Project order and home page picks | `order` (higher first, within each discipline) and `featured` in each project's frontmatter |
+
+### Testing
+
+[Playwright](https://playwright.dev) smoke tests in `tests/e2e/` run in Chromium against the production build, served by `astro preview`:
+
+```sh
+npx playwright install chromium   # once
+npm run build && npm run test:e2e
+```
+
+They cover:
+
+- Every page in the sitemap loads with one `h1`, no console errors and no failed requests.
+- The header toggle switches mode and remembers it, and the home page divider switches mode from the keyboard.
+- `/work` lists the current mode's discipline first, and its filters show one discipline at a time.
+- The old Wix URLs redirect, and unknown URLs show the 404 page.
+- Gallery images load, and gallery videos are served.
+
+When a test fails, `npx playwright show-report` opens the report with screenshots. In CI, the report is attached to the run.
 
 ### Deploy
 
@@ -92,6 +113,7 @@ Every pull request and push runs [`.github/workflows/pipeline.yml`](.github/work
 - **build**: `npm run check`, `npm run check:assets` and `npm run build`. The built `dist/` is reused by the later jobs, so what was tested is what ships.
 - **links**: every internal link and image in `dist/` must resolve.
 - **lighthouse**: an accessibility score under 0.9 fails the run. Performance, best practices and SEO only warn. Reports are attached to the run as artifacts.
+- **e2e**: the Playwright smoke tests (see Testing).
 - **spelling**: [cspell](https://cspell.org) in British English. It only leaves warnings and never fails the run. Add new names to `words` in `cspell.json`.
 - **deploy**: runs on pushes only, after the checks above pass.
 

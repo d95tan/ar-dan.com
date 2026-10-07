@@ -13,7 +13,7 @@ links:
   - label: RichardHO Architects
     url: https://richardhoarchitects.com/works/house-in-tanglin-planning-area
 featured: true
-order: 30
+order: 90
 ---
 
 A house over a century old, originally designed by Frank Brewer, carefully restored by RichardHO Architects with a new one-storey extension. I worked on it through design development, authority submissions and compliance, and construction (not as Qualified Person).

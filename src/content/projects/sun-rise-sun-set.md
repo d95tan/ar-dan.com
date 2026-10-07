@@ -11,9 +11,8 @@ cover: ./images/sun-rise-sun-set/Sundial Structure_NUS_34.jpg
 coverAlt: The Sundial Structure's slatted timber frames at dusk, with a figure climbing its steps
 gallery:
   - ./images/sun-rise-sun-set
-featured: true
-order: 20
 
+order: 50
 ---
 
 We wanted to create a place that could provoke contemplation and reflection amidst the progression of time. The shadows cast by the undulating roof onto the side columns and by the columns onto the steps change and move slowly within the space to portray the remnants of time. The structure is intended to provide an interactive space for people to walk through and explore their shadows, both a reflection of self and light. The transitional and alternating shadows cast at different timings form spaces that are tranquil and mysterious.

@@ -12,6 +12,8 @@ gallery: ./images/bb-bot
 links:
   - label: GitHub
     url: https://github.com/d95tan/bb_bot
+featured: true
+order: 90
 ---
 
 My wife works rotating shifts. One week she's up before dawn, the next she's sleeping through the day after a night shift, so there's no fixed routine to hang daily tasks on. An alarm at the same time every day is either in the middle of her sleep or long after she's left for work, and things get missed. On top of that, her roster arrives each month as a colour-coded calendar inside an app that doesn't sync with anything.

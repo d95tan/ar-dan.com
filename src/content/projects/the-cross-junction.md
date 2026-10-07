@@ -10,6 +10,7 @@ coverAlt: Physical model of a communal glamping lodge situated on the side of a 
 gallery:
   - ./images/the-cross-junction
 
+order: 20
 ---
 
 Situated on the edge of the cliff at Ubin Quarry, this eco-lodge is designed with the intention to create spaces that will bring people together.

@@ -10,6 +10,7 @@ coverAlt: Wooden stool with a mechanically retractable seat to protect it from r
 gallery:
   - ./images/tropos
 
+order: 10
 ---
 
 Challenged to tropicalise a garden stool, our team explored different methods of shielding the seat from rain. The use of dowel construction juxtaposes the mechanical elements to visually elevate the moving parts. A sacrificial proxy connects the stool to the earth, bringing life to an otherwise unusable leftover. Ultimately, our design resembles the bloom of a flower, with a mechanically retractable seat which stays dry even during thunderstorms.

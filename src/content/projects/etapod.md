@@ -11,7 +11,7 @@ coverAlt: EtaPod interface showing the containerised recycling line and equipmen
 gallery: 
     - ./images/etapod
 featured: true
-order: 20
+order: 70
 ---
 
 EtaPod streamlines the recycling of end-of-life photovoltaic panels. It manages and monitors the whole recycling workflow, from incoming panel batch tracking to real-time equipment operations.

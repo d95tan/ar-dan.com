@@ -15,7 +15,7 @@ links:
   - label: Live app
     url: https://etatune.etavolt.app/
 featured: true
-order: 10
+order: 80
 ---
 
 EtaTune uses machine learning to analyse and predict the health of photovoltaic systems. By ingesting historical inverter data, it identifies degradation patterns and pinpoints their root causes.

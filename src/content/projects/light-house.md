@@ -10,6 +10,7 @@ cover: ./images/light-house/2.jpg
 coverAlt: Dining area with an oval timber table and globe pendant lights
 gallery: ./images/light-house
 
+order: 60
 ---
 
 The original layout had the kitchen entrance tucked along the main corridor, fracturing the spaces into distinct and dark rooms.

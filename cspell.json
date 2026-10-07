@@ -8,7 +8,7 @@
     "src/site.ts",
     "README.md"
   ],
-  "ignorePaths": ["node_modules/**", "dist/**", ".astro/**"],
+  "ignorePaths": ["node_modules/**", "dist/**", ".astro/**", "playwright-report/**", "test-results/**"],
   "ignoreRegExpList": ["/\\]\\(\\.\\/[^)]*\\)/g", "/\\.\\/images\\/[^\\s'\"]*/g"],
   "words": [
     "AIRBITAT", "Ampang", "arcgis", "Archi", "Archlight", "Bahru", "Boustead", "color", "Consolas", "cwid",

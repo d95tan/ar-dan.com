@@ -9,10 +9,9 @@ stack: [Competition, PPVC, Mixed-use, Merit Prize, Studio]
 cover: ./images/the-tree-house/BCA Competition.jpg
 coverAlt: Night render of two green-wrapped residential towers
 gallery: ./images/the-tree-house
-featured: true
-order: 10
 
 
+order: 40
 ---
 
 _Merit Prize, International Building Design Competition 2020, organised by Singapore's Building and Construction Authority under the theme "Sustainable & Intelligent City"._
